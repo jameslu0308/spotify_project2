@@ -1,0 +1,17 @@
+pandas
+numpy
+requests
+python-dotenv==1.0.0
+bs4
+lxml
+pymongo
+mariadb==1.0.11
+glob2
+SQLAlchemy
+pymysql
+googlesearch-python
+fake-useragent
+Pysocks
+requests_tor
+torpy
+Flask

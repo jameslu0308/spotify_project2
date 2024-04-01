@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stats for you</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@latest/dist/echarts.min.js"></script>
+    <style>
+        .flex{
+            display: flex;
+            align-items: center;
+            height: 900px; 
+        }
+    </style>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" class="flex" data-title="{{ value1 }}" data-src="{{ value2 }}" data-genre="{{ value3 }}"></div>
+    <script type="text/javascript">
+        // var echarts = require('echarts');
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        
+        // get data form flask
+        var pyTitle = document.getElementById('main').getAttribute('data-title');
+        var titleList = pyTitle.replace(/'/g, '').replace(/\[|]/g, '').split(',');
+
+        if (titleList[0] ==  'popularity') {
+          var xaxis1 = 100;
+        } else {
+          var xaxis1 = 100000000;
+        }
+
+        var srcData = document.getElementById('main').getAttribute('data-src');
+        var srcList = srcData.replace(/\{|}/g, '').split(',');
+
+        var obj1 = {};
+        for (var x = srcList.length; x--;) {
+          var tmpName = srcList[x].split(':')[0];
+          // console.log(tmpName);
+          var numFoll = srcList[x].split(':')[1];
+          obj1[tmpName] = numFoll;
+        }
+        var n1 = Object.keys(obj1);
+        var n2 = Object.values(obj1);
+        // alert(n2);
+
+        var genreData = document.getElementById('main').getAttribute('data-genre');
+        var genreList = genreData.replace(/\{|}/g, '').split(',');
+
+        var obj3 = {};
+        for (var x = genreList.length; x--;) {
+          var tmpName = genreList[x].split(':')[0];
+          var numFoll = genreList[x].split(':')[1];
+          obj3[tmpName] = numFoll;
+        }
+
+        // 指定图表的配置项和数据
+        var option;
+        const builderJson = {
+  all: xaxis1,
+  charts: obj1
+};
+const downloadJson = obj3;
+
+const waterMarkText = 'ECHARTS';
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = canvas.height = 100;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.globalAlpha = 0.08;
+ctx.font = '20px Microsoft Yahei';
+ctx.translate(50, 50);
+ctx.rotate(-Math.PI / 4);
+ctx.fillText(waterMarkText, 0, 0);
+option = {
+  backgroundColor: '#EBDEF0',
+  tooltip: {},
+  title: [
+    {
+      text: titleList[0],
+      subtext: 'Total ' + builderJson.all,
+      left: '25%',
+      textAlign: 'center'
+    },
+    {
+      text: titleList[2],
+      left: '75%',
+      textAlign: 'center'
+    }
+  ],
+  grid: [
+    {
+      top: 60,
+      width: '55%',
+      bottom: '10%',
+      left: 12,
+      containLabel: true
+    },
+    {
+      top: '55%',
+      width: '50%',
+      bottom: '20%',
+      left: 10,
+      containLabel: true
+    }
+  ],
+  xAxis: [
+    {
+      type: 'value',
+      max: builderJson.all,
+      splitLine: {
+        show: false
+      }
+    }
+  ],
+  yAxis: [
+    {
+      type: 'category',
+      data: Object.keys(builderJson.charts),
+      axisLabel: {
+        interval: 0,
+        rotate: 20
+      },
+      splitLine: {
+        show: false
+      }
+    }
+  ],
+  series: [
+    {
+      type: 'bar',
+      stack: 'chart',
+      z: 3,
+      label: {
+        position: 'right',
+        show: true
+      },
+      data: Object.keys(builderJson.charts).map(function (key) {
+        return builderJson.charts[key];
+      })
+    },
+    {
+      type: 'bar',
+      stack: 'chart',
+      silent: true,
+      itemStyle: {
+        color: '#eee'
+      },
+      data: Object.keys(builderJson.charts).map(function (key) {
+        return builderJson.charts[key];
+      })
+    },
+    {
+      type: 'pie',
+      radius: [0, '60%'],
+      center: ['75%', '40%'],
+      data: Object.keys(downloadJson).map(function (key) {
+        return {
+          name: key.replace('.js', ''),
+          value: downloadJson[key]
+        };
+      })
+    }
+  ]
+};
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

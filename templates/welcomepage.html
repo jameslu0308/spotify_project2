@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        .back{
+            background-color:lightpink;
+        }
+        .flex{
+            font-size: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin:15% auto;    
+        }
+    </style>
+</head>
+<body class="back">
+    <div class="flex">
+        <div>
+            <h1>{{ text }}</h1>
+        </div>
+    <form action="#" method="post">
+        <div>
+            <label>Want to see some stats?</label>
+            <select name="srcFilter">
+                <option>popularity</option>
+                <option>followers</option>
+            </select>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Track List</title>
+    <style type="text/css">
+        .back{
+            background-color:lemonchiffon;
+        }
+
+    </style>
+
+</head>
+<body class="back">
+    <h1>Spotify statistics</h1>
+    <hr/>
+    <h2>{{ albumName }}</h2>
+    <h3><a href="/tracks/detail/{{ albumID }}" target="_blank">See detail information about the album ʕ •ᴥ•ʔ</a></h3>
+    <div>
+        <table border="5px" padding="10px" style="text-align:center">
+            <thead>
+                    <tr>
+                        {% for row in colname %}
+                            <th width="600px">{{ row }}</th>
+                        {% endfor %}
+                    </tr>
+
+            </thead>
+    
+            <tbody id="trackinfo">
+                {% for row in table_data %}
+                    <tr>
+                        <td>
+                            <a href="/tracks/lyrics/{{ artName }}/{{ row['Track Name'] }}" target="_blank">{{ row['Track Name'] }}</a>
+                        </td>
+                        <td>{{ row['Artists'] }}</td>
+                        <td>{{ row['External_urls'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

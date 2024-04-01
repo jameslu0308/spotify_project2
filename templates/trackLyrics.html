@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lyrics</title>
+    <style type="text/css">
+        .back{
+            background-color:lemonchiffon;
+        }
+
+    </style>
+
+</head>
+<body class="back">
+    <h1>Lyrics</h1>
+    <hr/>
+    <h2>{{ tracName }}</h2>
+    <div>
+        <table style="text-align:center">
+    
+            <tbody>
+                {% for row in table_data %}
+                    <div>{{ row }}</div>
+                    <!-- <tr>
+                        <td>{{ row }}</td>
+                    </tr> -->
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Spotify statistics</h1>
+<hr/>
+<h3>Album information</h3>
+{% for table in tables %}
+            {{ table|safe }}
+{% endfor %}
+</body>
+</html>

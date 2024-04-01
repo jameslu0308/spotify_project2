@@ -1,0 +1,24 @@
+version: '3'
+networks:
+  spotify_default2:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.101.0/24
+          gateway: 192.168.101.1
+services:
+  db:
+    image: mongo:4.4.25
+    container_name: mongodb_test_2
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+    networks:
+      - spotify_default2
+    volumes:
+      - './data:/data/db'
+    

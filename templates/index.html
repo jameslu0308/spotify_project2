@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Artist</title>
+    <style type="text/css">
+        .back{
+            background-color:honeydew;
+        }
+        div{
+            padding-right: 50px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="back">
+    <h1>Spotify statistics</h1>
+    <hr/>
+    <h2>Singer information</h2>
+    <div>
+        <div>
+            <ul>
+                <li>Name：{{ artist.name }}</li>
+                <li>Popularity：{{ artist.popularity }}</li>
+                <li>Genre：{{ artist.genres }}</li>
+                <li>Followers：{{ artist.followers }}</li>
+            </ul>
+        </div>
+        <div>
+            <img src = {{ img }} height = "400" width = "400" />
+        </div>
+    </div>
+</body>
+</html>
