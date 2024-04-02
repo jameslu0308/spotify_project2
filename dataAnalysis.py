@@ -15,33 +15,36 @@ def sortPopularity(sorItem):
     elif sorItem == 'popularity':
         sort2 = 'followers'
 
-    collName = 'rapper_information'
-    _table = Spotify(collName)
-    dfPop = pd.DataFrame(_table.sort_search(sorItem, 'desc'))
+    collection_name = 'rapper_information'
+    _collection = Spotify(collection_name)
+    dfPop = pd.DataFrame(_collection.sort_search(sorItem, 'desc'))
 
     # show top 50 data
-    dfshow = dfPop[:50]
+    df_top50 = dfPop[:50]
 
-    sortName = dfshow['name'].str.replace(',', '-').to_list()
+    sortName = df_top50['name'].str.replace(',', '-').to_list()
     if sorItem == 'followers':
-        sortData = dfshow[sorItem].apply(lambda x: x['total']).to_list()
+        # followers 數由大到小的list
+        sortData = df_top50[sorItem].apply(lambda x: x['total']).to_list()
     elif sorItem == 'popularity':
-        sortData = dfshow[sorItem].to_list()
-
+        sortData = df_top50[sorItem].to_list()
 
     '''get genre data'''
-    show1 = 'genres'
-    showtmp = dfshow[show1].to_list()
-    showtmp2 = [item for sublist in showtmp for item in sublist]
-    showSer = pd.Series(showtmp2).value_counts()
-    showName = list(showSer.index)
-    showData = list(showSer)
+    category = 'genres'
+    m_style = df_top50[category].to_list()
+    # 根據followers篩選 最高的前50個歌手的所有 tag 總和
+    total_style = [item for sublist in m_style for item in sublist]
+
+    style_counts = pd.Series(total_style).value_counts()
+    style_name = list(style_counts.index)
+    style_sum = list(style_counts)
     # print(sort2Data)
 
     # value to return
-    titleList = [sorItem, sort2, show1]
+    titleList = [sorItem, sort2, category]
     dataList = dict(zip(sortName, sortData))
-    genreList = dict(zip(showName, showData))
+    # 根據風格標籤 統計總和 由大到小排序
+    genreList = dict(zip(style_name, style_sum))
     # print(genreList)
 
     return titleList, dataList, genreList
@@ -50,99 +53,132 @@ def sortPopularity(sorItem):
 '''
 show track data in the album, sort by popularity
 '''
-
+# 給 album id 找 track
+# 一張專輯裡面的所有track
 def trackData(albumID):
-    collName = 'rapper_track_general_information'
-    table = Spotify(collName)
-    query = {"$regex":f"{albumID}"}
-    df1 = pd.DataFrame(table.get_collection_search_query('href', query)['items'])  #retrieve each track's api from DB
+
+    # 每首歌的 collection / 一筆資料為一張album / 裡面有很多item 是各別track
+    _collection = Spotify('rapper_track_general_information')
+    # 篩選出同一張專輯的歌
+    filter_query = {"$regex":f"{albumID}"}
+    #retrieve each track's api from DB
+    # 篩選符合album id 的 每個track回來 (理論上為一張專輯的全部track)
+    df1 = pd.DataFrame(_collection.get_collection_search_query('href', filter_query)['items']) 
     # print(df1)
 
     # request track information through API
-    srcID = os.getenv("SPOTIFY_TOKEN_OWNER")
-    collName = 'spotify_token'
-    type, token = backendFunc.checkToken(collName, srcID)
+    search_ID = os.getenv("SPOTIFY_TOKEN_OWNER")
+
+    type, token = backendFunc.checkToken('spotify_token', search_ID)
     headers = {'Authorization': f"{type} {token}"}
 
     list1 = []
     for i in df1['href']:
+        # 每首歌的資訊
         res = backendFunc.requestUrl(i, headers, 'json')
         list1.append(res)
+    # 每首歌整理成 df
     df2 = pd.DataFrame.from_records(list1)
-    col = ['Track Name', 'Artists', 'Artist Number', 'Popularity', 'Duration (minutes)']
+    columns = ['Track Name', 'Artists', 'Artist Number', 'Popularity', 'Duration (minutes)']
     list2 = []
 
     '''retrieve data from API call'''
     for j in range(df2.shape[0]):
-        tmpSer = df2.iloc[j]
+        tmp_song = df2.iloc[j]
 
         if len(list2) == 0:
-            albumName = tmpSer['album']['name']
-            imgUrl = tmpSer['album']['images'][1]['url']
-        singList = []
-        for w in tmpSer['artists']:
-            singList.append(w['name'])
-        numArt = len(tmpSer['artists'])
-        songLen = round((tmpSer['duration_ms']) / 60000, 2)
-        list2.append({
-            col[0]: tmpSer['name'],
-            col[1]: singList,
-            col[2]: numArt,
-            col[3]: tmpSer['popularity'],
-            col[4]: songLen
-        })
+            albumName = tmp_song['album']['name']
+            imgUrl = tmp_song['album']['images'][1]['url']
+        # total singer by each song
+        singer_lists = []
+        for w in tmp_song['artists']:
+            singer_lists.append(w['name'])
 
+        artist_nums = len(tmp_song['artists'])
+        # 60,000毫秒(1分鐘) 
+        song_length = round((tmp_song['duration_ms']) / 60000, 2)
+        list2.append({
+            columns[0]: tmp_song['name'], # song name
+            columns[1]: singer_lists, # total singer list
+            columns[2]: artist_nums, # singer number
+            columns[3]: tmp_song['popularity'], # song popularity
+            columns[4]: song_length # song length
+        })
+    # total song dataframe
     dfshow = pd.DataFrame.from_dict(list2)
     dfshow = dfshow.sort_values(by='Popularity', ascending=False)
     dfDict = dfshow.to_dict('records')
     # print(dfDict)
 
-    return albumName, imgUrl, col, dfDict
+    return albumName, imgUrl, columns, dfDict
 
 
-def ablumData(artistName):
+def albumData(artistName):
     if artistName:
         # columns=['Album_Name', 'Type', 'Total_tracks','Release_date', 'Artists', 'Available_markets','External_urls']
         columns=['Album_cover', 'Album_Name', 'Type', 'Release_date', 'Total_tracks', 'Artists','External_urls']
 
         # search album info using artist name and ID, for specific
-        name1 = 'rapper_album_information'
-        name2 = 'rapper_information'
-        table1 = Spotify(name1)
-        table2 = Spotify(name2)
+        # 每筆 doc較雜亂無章，每筆 doc裡面有很多 item
+        # 可能是rapper 本人的 album，也有可能是他出現在別人的那張album
+        collection1 = Spotify('rapper_album_information')
+        collection2 = Spotify('rapper_information')
 
         try:
-            artistID = table2.get_collection_search_query('name', artistName)['id']
-            query = {'items.artists.name': artistName, 'items.artists.id': artistID}
-            df = pd.DataFrame(table1.get_collection_search_query_multiple_conditions(query, 'and'))
+            # 透過 rapper information 找 id
+            artistID = collection2.get_collection_search_query('name', artistName)['id']
+            query = {'items.artists.name': artistName, 
+                     'items.artists.id': artistID}
+            # 找所有符合的 album(歌手全部的album)
+            df = pd.DataFrame(
+                collection1.get_collection_search_query_multiple_conditions(query, 'and')
+                )
             if not df.empty:
                 templist1 = []
-                for i in df['items']:
-                    for j in i:
-                        artisList = []
+                # 每筆document(可能是他自己的專輯/ 或是他有出線的專輯)
+                for doc in df['items']:
+                    # 每個 item
+                    for j in doc:
+                        artist_list = []
                         for idx, x in enumerate(j['artists']):
                             if artistName in x.values():
                                 len1 = len(j['artists'])
                                 for y in range(len1):
-                                    artisList.append(j['artists'][y]['name'])
+                                    artist_list.append(j['artists'][y]['name'])
                                 templist1.append({columns[0]: j['images'][0]['url'], 
                                                 columns[1]: j['name'], 
                                                 columns[2]: j['album_type'], 
                                                 columns[3]: j['release_date'], 
                                                 columns[4]: j['total_tracks'], 
-                                                columns[5]: artisList, 
+                                                columns[5]: artist_list, 
                                                 columns[6]: j['external_urls']['spotify']})
             
             dfshow = pd.DataFrame.from_dict(templist1)
 
             # remove duplicated data and sort by release date in descending order
             dfshow['Release_date'] = pd.to_datetime(dfshow['Release_date'], format='%Y%m%d', errors='ignore')
+            # 刪除重複資料
             dfshow = dfshow.loc[dfshow.astype(str).drop_duplicates().index].sort_values(by='Release_date', ascending=False).reset_index(drop=True)
             dfDict = dfshow.to_dict('records')
-            returnList = [artistName, dfDict, columns]
 
+            returnList = [artistName, dfDict, columns]
+            """ 
+            輸入artist name 回傳範例
+            dfDict 為可搜尋到的所有album如下 eg.
+            很多筆
+            [{},
+              {'Album_cover': 'https://i.scdn.co/image/ab67616d0000b2735580eed61be56d710c5eac31',
+                'Album_Name': 'Vultures',
+                'Type': 'single',
+                'Release_date': '2023-11-18',
+                'Total_tracks': 1,
+                'Artists': ['¥$', 'Kanye West', 'Ty Dolla $ign'],
+                'External_urls': 'https://open.spotify.com/album/2mT5CGX436a2WbCUMuR20Y'},
+                ...,
+                {}         
+            ]
+            """
             return returnList
-        
         except:
             return 0
         
@@ -150,13 +186,13 @@ def ablumData(artistName):
 # fisrt one is artist's name, second one is album name
 def trackDataGen(artName, albName):
     try:
-        collName1 = 'rapper_album_information'
-        collName2 = 'rapper_track_general_information'
-        table1 = Spotify(collName1)
-        table2 = Spotify(collName2)
+        collection1 = Spotify('rapper_album_information')
+        collection2 = Spotify('rapper_track_general_information')
 
-        query1 = {'items.name': albName, 'items.artists.name': artName}
-        df1 = pd.DataFrame(table1.get_collection_search_query_multiple_conditions(query1, 'and'))
+        filter1 = {'items.name': albName, 
+                  'items.artists.name': artName}
+        df1 = pd.DataFrame(
+            collection1.get_collection_search_query_multiple_conditions(filter1, 'and'))
         list1 = df1.loc[0]['items']
         df2 = pd.DataFrame.from_records(list1)
         albumID = df2[df2['name'] == albName]['id'].iloc[0]
@@ -164,8 +200,9 @@ def trackDataGen(artName, albName):
 
         '''columns to retrieve'''
         cols = ['Track Name', 'Artists', 'External_urls']
-        query2 = {"$regex":f"{albumID}"}
-        res = table2.get_collection_search_query('href', query2)
+        res = collection2\
+            .get_collection_search_query('href',
+                                         {"$regex":f"{albumID}"})
         templist = []
         for i in res['items']:
             singerlist = []

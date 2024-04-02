@@ -40,8 +40,8 @@ class Spotify:
         query = {search_field: search_value}
         return self.collection.find_one(query)
     
-    def get_collection_search_query(self, field_Name, search_item):
-        query = {field_Name: search_item}
+    def get_collection_search_query(self, field_Name, search_value):
+        query = {field_Name: search_value}
         return self.collection.find_one(query)
 
     def get_collection_search_query_many(self, query):
