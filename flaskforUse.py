@@ -16,7 +16,7 @@ def hello():
         return redirect(url_for('showStats', srcFilter=srcItem))
     else:
         return render_template('welcomepage.html', text=text)
-
+#<string> 是一種轉換器，它將 URL 路徑中的部分轉換為字符串作為參數傳遞
 @app.route("/stats/<string:srcFilter>")
 def showStats(srcFilter):
     title, srcData, genreData = dataAnalysis.sortPopularity(srcFilter)

@@ -183,7 +183,7 @@ def albumData(artistName):
             return 0
         
 
-# fisrt one is artist's name, second one is album name
+# first one is artist's name, second one is album name
 def trackDataGen(artName, albName):
     try:
         collection1 = Spotify('rapper_album_information')
