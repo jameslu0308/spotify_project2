@@ -126,22 +126,22 @@
         }
       ],
       grid: [
-        {
+        { // 水平柱狀圖
           top: 60,
           width: '55%',
           bottom: '10%',
           left: 12,
           containLabel: true
         },
-        {
-          top: '55%',
-          width: '50%',
-          bottom: '20%',
-          left: 10,
-          containLabel: true
-        }
+        // { //非圖上兩張圖的區塊-> gridIndex:1
+        //   top: '55%',
+        //   width: '50%',
+        //   bottom: '20%',
+        //   left: 10,
+        //   containLabel: true
+        // }
       ],
-      xAxis: [
+      xAxis: [ //藥用另外一個grid，要加gridIndex:1，就可對其設定
         {
           type: 'value',
           max: builderJson.all,
@@ -178,7 +178,7 @@
         },
         { // 第二個bar為灰色水平條
           type: 'bar',
-          stack:null,
+          stack: 'chart',
           silent: true,
           itemStyle: {
             color: '#eee'
