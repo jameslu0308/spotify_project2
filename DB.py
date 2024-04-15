@@ -29,10 +29,13 @@ class Spotify:
     def insert_many(self, data):
         return self.collection.insert_many(data)
     
-    def update_one(self, search_item, oriValue, newValue):
-        oriItem = {search_item: oriValue}
-        newItem = {"$set" : {search_item: newValue}}
-        return self.collection.update_one(oriItem, newItem)
+    def update_one(self, search_field, search_value,\
+                   update_field, update_value):
+        filter = {search_field: search_value}
+        update = {"$set" : {update_field: update_value}}
+
+
+        return self.collection.update_one(filter, update)
     
     # 根據 id 名字篩選出來
     # 根據 field value 來尋找值
