@@ -12,7 +12,7 @@ from requests_tor import RequestsTor
 from fake_useragent import UserAgent
 
 
-
+# check whether token is expired, if expired, then update
 def checkToken(tokenCollection, name):
     from DB import Spotify
     # retrieve token from db
@@ -85,6 +85,11 @@ def requestUrl(srcUrl, headers = None, resType = None):
         soup = BeautifulSoup(r.content, 'lxml')
         return soup
     elif resType == 'json':
+        # try:
         return r.json()
+        # except:
+        #     if r.status_code ==429:
+        #         print("Response 429")
+        #         return 429
     else:
         return r
