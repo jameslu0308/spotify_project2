@@ -19,8 +19,9 @@ def hello():
 #<string> 是一種轉換器，它將 URL 路徑中的部分轉換為字符串作為參數傳遞
 @app.route("/stats/<string:srcFilter>")
 def showStats(srcFilter):
-    title, srcData, genreData = dataAnalysis.sortPopularity(srcFilter)
-    return render_template('stats1.html', value1=title, value2=srcData, value3=genreData)
+    title, rap_dict, genres_dict = dataAnalysis.sortPopularity(srcFilter)
+    return render_template('stats1.html', value1=title, 
+                           value2=rap_dict, value3=genres_dict)
 
 
 @app.route("/artist/<string:name>")
@@ -33,10 +34,10 @@ def query_artist(name):
             return render_template('index.html', artist=info, img=src)
         except:
             return 'No artist found!'
-
+# 輸入artist name
 @app.route("/album/<string:name>")
 def query_ablum(name):
-    res = dataAnalysis.ablumData(name)
+    res = dataAnalysis.albumData(name)
     if res == 0:
         return 'No album information found!'
     else:

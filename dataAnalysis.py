@@ -50,6 +50,47 @@ def sortPopularity(sorItem):
     return titleList, dataList, genreList
 
 
+def sortPopularity2(sorItem):
+    if sorItem == 'followers':
+        sort2 = 'popularity'
+    elif sorItem == 'popularity':
+        sort2 = 'followers'
+
+    # 根據followers/popularity篩選 最高的前50個歌手的所有 tag 總和
+    newrapID = Spotify('new_rap_ID')
+    # 定義聚合管道
+    pipeline_1 = [
+        { "$sort": { sorItem: -1 } },  # 按照 followers 字段降序排序
+        { "$project": { "_id": 0, "name": 1, sorItem: 1 } },  # 只返回 name 和 followers 字段
+        { "$limit": 50}    
+    ]
+    # 執行聚合操作並構建字典
+    rap_dict = {}
+    res1 = newrapID.collection.aggregate(pipeline_1)
+    for doc in res1:
+        rap_dict[doc['name']] = doc[sorItem]
+
+    # 根據followers篩選 最高的前50個歌手的所有 tag 總和
+    # 根據風格標籤 統計總和 由大到小排序
+    pipeline_2 = [
+        {'$sort':{sorItem:-1}},
+        {'$limit':50},
+        {'$unwind':'$genres'},
+        {'$group': {"_id":"$genres", "count":{"$sum":1}}},
+        {'$sort':{"count":-1}},
+    ]
+    # 執行聚合操作
+    res2 = newrapID.collection.aggregate(pipeline_2)
+    genres_dict ={}
+    for d in res2:
+        genres_dict[d['_id']] = d['count']
+
+    # value to return
+    titleList = [sorItem, sort2, 'genres']
+
+    return titleList, rap_dict, genres_dict
+
+
 '''
 show track data in the album, sort by popularity
 '''

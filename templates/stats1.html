@@ -43,7 +43,8 @@
     console.log(srcData) //string
     console.log(typeof srcData)
 
-    var srcList = srcData.replace(/\{|}/g, '').split(',');
+    // 修正這裡
+    var srcList = srcData.replace(/\{|}/g, '').split(/(?=\d+),/);
     console.log('srcList: ',srcList)
     console.log(typeof srcList)
 
