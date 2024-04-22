@@ -15,6 +15,10 @@
             align-items: center;
             margin:15% auto;    
         }
+
+        /* #artistInput {
+            display: none;
+        } */
     </style>
 </head>
 <body class="back">
@@ -28,10 +32,27 @@
             <select name="srcFilter">
                 <option>popularity</option>
                 <option>followers</option>
+                <!-- <option>artist</option> 添加一个 artist 选项 -->
             </select>
+            <!-- artist 名称输入框
+            <input type="text" id="artistInput" name="artistName" placeholder="Enter artist name"> -->
             <button type="submit">Submit</button>
         </div>
     </form>
     </div>
+    <script>
+        // var selectBox = document.getElementById("srcFilter");
+        // var artistInput = document.getElementById("artistInput");
+
+        // // 添加事件监听器，监听选择框的改变事件
+        // selectBox.addEventListener("change", function() {
+        //     // 如果选择的是 "artist"，则显示输入框，否则隐藏输入框
+        //     if (selectBox.value === "artist") {
+        //         artistInput.style.display = "inline-block";
+        //     } else {
+        //         artistInput.style.display = "none";
+        //     }
+        // });
+    </script>
 </body>
 </html>

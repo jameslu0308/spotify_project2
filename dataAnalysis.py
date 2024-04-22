@@ -152,6 +152,37 @@ def trackData(albumID):
     # print(dfDict)
 
     return albumName, imgUrl, columns, dfDict
+# 輸出columns有增加，要更改
+def trackData2(album_id):
+    res1 = Spotify('new_album_info').collection.find_one({'album_id':album_id})
+    albumName = res1['album_name']
+    imgUrl = res1['album_images'][0]['url']
+    columns = ['Track Name', 'Artists', 'Artist Number', 'Popularity', 'Duration (minutes)']
+    tracks = []
+    track_ids = [track['track_id'] for track in res1['tracks']]
+    track_ids_str  =  ','.join(track_ids)
+    # 抓取資料
+    track_endpoint = f'https://api.spotify.com/v1/tracks?ids={track_ids_str}'
+    search_ID = os.getenv("SPOTIFY_TOKEN_OWNER")
+    type, token = backendFunc.checkToken('spotify_token', search_ID)
+    headers = {'Authorization': f"{type} {token}"}
+    track_ids_res = backendFunc.requestUrl(track_endpoint, headers, 'json')
+
+    for i, v in enumerate(res1['tracks']):
+        temp_track_dict = {}
+        temp_track_dict['track_name'] = v['track_name']
+        temp_track_dict['track_id'] = v['track_id']
+        temp_track_dict['track_number'] = v['track_number']
+        temp_track_dict['disc_number'] = v['disc_number']
+        temp_track_dict['duration(minutes)'] = round((v['duration_ms']) / 60000, 2)
+
+        # from spotify api
+        temp_track_dict['popularity'] = track_ids_res['tracks'][i]['popularity']
+        temp_track_dict['artist_number'] = len(track_ids_res['tracks'][i]['artists'])
+        temp_track_dict['artists'] = [i['name'] for i in track_ids_res['tracks'][i]['artists']]
+        tracks.append(temp_track_dict)
+
+    return albumName, imgUrl, columns, tracks
 
 
 def albumData(artistName):
@@ -223,6 +254,8 @@ def albumData(artistName):
         except:
             return 0
         
+# 輸出columns有增加，要更改
+
 
 # first one is artist's name, second one is album name
 def trackDataGen(artName, albName):
