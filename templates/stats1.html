@@ -18,6 +18,11 @@
   <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
   <div id="main" class="flex" data-title="{{ value1 }}" data-src="{{ value2 }}" data-genre="{{ value3 }}"></div>
   <script type="text/javascript">
+
+    // 變數直接傳進來，參數名稱給flask中打的參數
+    // var test = "{{ value1|safe }}";
+    // console.log("output: ",test)
+
     // var echarts = require('echarts');
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
@@ -26,8 +31,13 @@
     var pyTitle = document.getElementById('main').getAttribute('data-title');
     console.log(pyTitle) // typeof: string
     console.log(typeof pyTitle)
-    //將全部的 '替換成空，將所有的 [或]替換成空，/\[|]/g中的\是轉義符
-    var titleList = pyTitle.replace(/'/g, '').replace(/\[|]/g, '').replace(/ /g, '').split(',');
+    
+    // 方法1: 將全部的 '替換成空，將所有的 [或]替換成空，/\[|]/g中的\是轉義符
+    // var titleList = pyTitle.replace(/'/g, '').replace(/\[|]/g, '').replace(/ /g, '').split(',');
+    
+    // 方法2
+    pyTitle = pyTitle.replace(/'/g, '"')
+    var titleList = JSON.parse(pyTitle)
     console.log('titleList:',titleList) // typeof: object
     //console.log(typeof titleList)
 
@@ -43,58 +53,69 @@
     console.log(srcData) //string
     console.log(typeof srcData)
 
-    // 修正這裡
-    var srcList = srcData.replace(/\{|}/g, '').split(/(?=\d+),/);
+    // 方法1
+    // var srcList = srcData.replace(/\{|}/g, '').split(",")
+    
+    // 方法2
+    srcData = srcData.replace(/'/g, '"')
+    var srcList = JSON.parse(srcData)
     console.log('srcList: ',srcList)
     console.log(typeof srcList)
 
-    var obj1 = {};
-    for (var x = srcList.length; x--;) {
-      // " 'Eminem'" to "'Eminem'"
-      var tmpName = srcList[x].split(':')[0].replace(" '", "'");
-      //console.log('tmpName:',tmpName);
-      var followerNum = srcList[x].split(':')[1].replace(" ", ''); // " 3564" to "3564"
-      //console.log('followerNum:', followerNum)
-      obj1[tmpName] = followerNum;
-    }
-    console.log('obj1:',obj1)
-    console.log(typeof obj1)
+    // var obj1 = {};
+    // for (var x = srcList.length; x--;) {
+    //   // " 'Eminem'" to "'Eminem'"
+    //   var tmpName = srcList[x].split(':')[0].replace(" '", "'");
+    //   //console.log('tmpName:',tmpName);
+    //   var followerNum = srcList[x].split(':')[1].replace(" ", ''); // " 3564" to "3564"
+    //   //console.log('followerNum:', followerNum)
+    //   obj1[tmpName] = followerNum;
+    // }
+    // console.log('obj1:',obj1)
+    // console.log(typeof obj1)
 
-
-    var n1 = Object.keys(obj1); // 獲取dict的 key
-    console.log('n1: ',n1)
-    var n2 = Object.values(obj1); // 獲取dict的value
-    console.log('n2: ',n2)
-    // alert(n2);
+    // // var n1 = Object.keys(obj1); // 獲取dict的 key
+    // var n1 = Object.keys(srcList); // 獲取dict的 key
+    // console.log('n1: ',n1)
+    // // var n2 = Object.values(obj1); // 獲取dict的value
+    // var n2 = Object.values(srcList); // 獲取dict的value
+    // console.log('n2: ',n2)
+    // // alert(n2);
 
     var genreData = document.getElementById('main').getAttribute('data-genre');
-    console.log(genreData)
-    var genreList = genreData.replace(/\{|}/g, '').split(',');
-    console.log(genreList)
+    // 方法2
+    genreData = genreData.replace(/'/g,'"')
+    var genreList = JSON.parse(genreData)
+    console.log('genreList:',genreList)
+    // 方法1
+    // console.log(genreData)
+    // var genreList = genreData.replace(/\{|}/g, '').split(',');
+    // console.log(genreList)
 
-    var obj3 = {};
-    for (var x = genreList.length; x--;) {
-      var tmpName = genreList[x].split(':')[0].replace(" '", "'");
-      //console.log('tmpName:', tmpName)
-      var followerNum = genreList[x].split(':')[1].replace(" ", '');
-      // console.log('followerNum:', followerNum)
-      obj3[tmpName] = followerNum;
-    }
-    console.log('obj3:',obj3)
+    // var obj3 = {};
+    // for (var x = genreList.length; x--;) {
+    //   var tmpName = genreList[x].split(':')[0].replace(" '", "'");
+    //   //console.log('tmpName:', tmpName)
+    //   var followerNum = genreList[x].split(':')[1].replace(" ", '');
+    //   // console.log('followerNum:', followerNum)
+    //   obj3[tmpName] = followerNum;
+    // }
+    // console.log('obj3:',obj3)
+    
     // 指定图表的配置项和数据
     var option;
     const builderJson = {
       // x 軸預設全長
       all: xaxis1,
       // 圖表數據
-      charts: obj1
+      charts: srcList
     };
     console.log('builderJson:',builderJson)
     console.log('builderJson.charts :',builderJson.charts)
     console.log('object keys map func:',Object.keys(builderJson.charts).map(function (key) {
             return builderJson.charts[key];
           }))
-    const downloadJson = obj3;
+    const downloadJson = genreList;
     console.log('downloadJson(object) :',downloadJson)
 
 
@@ -110,6 +131,7 @@
     ctx.rotate(-Math.PI / 4);
     ctx.fillText(waterMarkText, 0, 0);
     console.log('yaxis data:',Object.keys(builderJson.charts))
+    console.log('reverse_yaxis data:',Object.keys(builderJson.charts).reverse())
     option = {
       backgroundColor: '#EBDEF0',
       tooltip: {},
@@ -154,7 +176,8 @@
       yAxis: [
         {
           type: 'category',
-          data: Object.keys(builderJson.charts),
+          // 不知為何，改成小到大，頁面呈現起來才會是，粉絲數大的在上面
+          data: Object.keys(builderJson.charts).reverse(),
           axisLabel: {
             interval: 0,
             rotate: 20
@@ -173,7 +196,10 @@
             position: 'right',
             show: true
           },
-          data: Object.keys(builderJson.charts).map(function (key) {
+          data: Object.keys(builderJson.charts)
+          // 不知為何，改成小到大，頁面呈現起來才會是，粉絲數大的在上面
+          .sort((a, b) => builderJson.charts[a] - builderJson.charts[b])
+          .map(function (key) {
             return builderJson.charts[key];
           })
         },
@@ -184,7 +210,9 @@
           itemStyle: {
             color: '#eee'
           },
-          data: Object.keys(builderJson.charts).map(function (key) {
+          data: Object.keys(builderJson.charts)
+          .sort((a, b) => builderJson.charts[a] - builderJson.charts[b])
+          .map(function (key) {
             return builderJson.charts[key];
           })
         },
@@ -192,7 +220,9 @@
           type: 'pie',
           radius: [0, '60%'],
           center: ['75%', '40%'],
-          data: Object.keys(downloadJson).map(function (key) {
+          data: Object.keys(downloadJson)
+          .sort((a, b) => downloadJson[a] - downloadJson[b])
+          .map(function (key) {
             return {
               name: key.replace('.js', ''),
               value: downloadJson[key]

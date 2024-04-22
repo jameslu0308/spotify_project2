@@ -19,7 +19,7 @@ def hello():
 #<string> 是一種轉換器，它將 URL 路徑中的部分轉換為字符串作為參數傳遞
 @app.route("/stats/<string:srcFilter>")
 def showStats(srcFilter):
-    title, rap_dict, genres_dict = dataAnalysis.sortPopularity(srcFilter)
+    title, rap_dict, genres_dict = dataAnalysis.sortPopularity2(srcFilter)
     return render_template('stats1.html', value1=title, 
                            value2=rap_dict, value3=genres_dict)
 
