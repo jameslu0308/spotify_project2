@@ -157,7 +157,6 @@ def trackData2(album_id):
     res1 = Spotify('new_album_info').collection.find_one({'album_id':album_id})
     albumName = res1['album_name']
     imgUrl = res1['album_images'][0]['url']
-    columns = ['Track Name', 'Artists', 'Artist Number', 'Popularity', 'Duration (minutes)']
     tracks = []
     track_ids = [track['track_id'] for track in res1['tracks']]
     track_ids_str  =  ','.join(track_ids)
@@ -179,8 +178,12 @@ def trackData2(album_id):
         # from spotify api
         temp_track_dict['popularity'] = track_ids_res['tracks'][i]['popularity']
         temp_track_dict['artist_number'] = len(track_ids_res['tracks'][i]['artists'])
+        temp_track_dict['external_urls'] = track_ids_res['tracks'][i]['external_urls']['spotify']
         temp_track_dict['artists'] = [i['name'] for i in track_ids_res['tracks'][i]['artists']]
         tracks.append(temp_track_dict)
+
+    columns = list(tracks[0].keys())
+    
 
     return albumName, imgUrl, columns, tracks
 
@@ -255,7 +258,32 @@ def albumData(artistName):
             return 0
         
 # 輸出columns有增加，要更改
+def albumData2(artistName):
+    r1 = Spotify('new_rap_ID').collection.find_one({'name':artistName})
+    # artistName = r1['name']
+    # album_lists = []
+    rapper_all_songs = []
+    for i, v in enumerate(r1['singles']+r1['albums']):
+        temp_dict = {}
+        temp_dict['disc_type'] = v['album_type']
+        temp_dict['release_date'] = v['release_date']
+        temp_dict['total_artists'] = [i['name'] for i in v['total_artists']]
+        temp_dict['disc_image'] = v['images'][0]['url']
+        
+        if temp_dict['disc_type']=='single':
+            temp_dict['disc_name'] = v['single_name']
+            temp_dict['disc_id'] = v['single_id']
+            temp_dict['total_tracks'] = v['total_singles_num']
+        else: # album
+            temp_dict['disc_name'] = v['album_name']
+            temp_dict['disc_id'] = v['album_id']
+            temp_dict['total_tracks'] = v['total_tracks_num']
 
+        temp_dict['external_urls'] = f"https://open.spotify.com/album/{temp_dict['disc_id']}"
+        rapper_all_songs.append(temp_dict)
+    columns = list(rapper_all_songs[0].keys())
+    
+    return artistName, rapper_all_songs, columns
 
 # first one is artist's name, second one is album name
 def trackDataGen(artName, albName):
