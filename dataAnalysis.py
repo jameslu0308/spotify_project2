@@ -94,8 +94,6 @@ def sortPopularity2(sorItem):
 '''
 show track data in the album, sort by popularity
 '''
-# 給 album id 找 track
-# 一張專輯裡面的所有track
 def trackData(albumID):
 
     # 每首歌的 collection / 一筆資料為一張album / 裡面有很多item 是各別track
@@ -153,39 +151,43 @@ def trackData(albumID):
 
     return albumName, imgUrl, columns, dfDict
 # 輸出columns有增加，要更改
+# 給 album id 
+# 輸出所有 track
 def trackData2(album_id):
-    res1 = Spotify('new_album_info').collection.find_one({'album_id':album_id})
-    albumName = res1['album_name']
-    imgUrl = res1['album_images'][0]['url']
-    tracks = []
-    track_ids = [track['track_id'] for track in res1['tracks']]
-    track_ids_str  =  ','.join(track_ids)
-    # 抓取資料
-    track_endpoint = f'https://api.spotify.com/v1/tracks?ids={track_ids_str}'
-    search_ID = os.getenv("SPOTIFY_TOKEN_OWNER")
-    type, token = backendFunc.checkToken('spotify_token', search_ID)
-    headers = {'Authorization': f"{type} {token}"}
-    track_ids_res = backendFunc.requestUrl(track_endpoint, headers, 'json')
+    try:
+        res1 = Spotify('new_album_info').collection.find_one({'album_id':album_id})
+        albumName = res1['album_name']
+        imgUrl = res1['album_images'][0]['url']
+        tracks = []
+        track_ids = [track['track_id'] for track in res1['tracks']]
+        track_ids_str  =  ','.join(track_ids)
+        # 抓取資料
+        track_endpoint = f'https://api.spotify.com/v1/tracks?ids={track_ids_str}'
+        search_ID = os.getenv("SPOTIFY_TOKEN_OWNER")
+        type, token = backendFunc.checkToken('spotify_token', search_ID)
+        headers = {'Authorization': f"{type} {token}"}
+        track_ids_res = backendFunc.requestUrl(track_endpoint, headers, 'json')
 
-    for i, v in enumerate(res1['tracks']):
-        temp_track_dict = {}
-        temp_track_dict['track_name'] = v['track_name']
-        temp_track_dict['track_id'] = v['track_id']
-        temp_track_dict['track_number'] = v['track_number']
-        temp_track_dict['disc_number'] = v['disc_number']
-        temp_track_dict['duration(minutes)'] = round((v['duration_ms']) / 60000, 2)
+        for i, v in enumerate(res1['tracks']):
+            temp_track_dict = {}
+            temp_track_dict['track_name'] = v['track_name']
+            temp_track_dict['track_id'] = v['track_id']
+            temp_track_dict['track_number'] = v['track_number']
+            temp_track_dict['disc_number'] = v['disc_number']
+            temp_track_dict['duration(minutes)'] = round((v['duration_ms']) / 60000, 2)
 
-        # from spotify api
-        temp_track_dict['popularity'] = track_ids_res['tracks'][i]['popularity']
-        temp_track_dict['artist_number'] = len(track_ids_res['tracks'][i]['artists'])
-        temp_track_dict['external_urls'] = track_ids_res['tracks'][i]['external_urls']['spotify']
-        temp_track_dict['artists'] = [i['name'] for i in track_ids_res['tracks'][i]['artists']]
-        tracks.append(temp_track_dict)
+            # from spotify api
+            temp_track_dict['popularity'] = track_ids_res['tracks'][i]['popularity']
+            temp_track_dict['artist_number'] = len(track_ids_res['tracks'][i]['artists'])
+            temp_track_dict['external_urls'] = track_ids_res['tracks'][i]['external_urls']['spotify']
+            temp_track_dict['artists'] = [i['name'] for i in track_ids_res['tracks'][i]['artists']]
+            tracks.append(temp_track_dict)
 
-    columns = list(tracks[0].keys())
-    
-
-    return albumName, imgUrl, columns, tracks
+        columns = list(tracks[0].keys())
+        returnList = [albumName, imgUrl, columns, tracks]
+        return returnList
+    except:
+        return 0 
 
 
 def albumData(artistName):
@@ -258,33 +260,49 @@ def albumData(artistName):
             return 0
         
 # 輸出columns有增加，要更改
+# give artsit name
+# return 所有專輯和singles列表
+# ['disc_type',
+#  'release_date',
+#  'total_artists',
+#  'disc_image',
+#  'disc_name',
+#  'disc_id',
+#  'total_tracks',
+#  'external_urls']
 def albumData2(artistName):
-    r1 = Spotify('new_rap_ID').collection.find_one({'name':artistName})
-    # artistName = r1['name']
-    # album_lists = []
-    rapper_all_songs = []
-    for i, v in enumerate(r1['singles']+r1['albums']):
-        temp_dict = {}
-        temp_dict['disc_type'] = v['album_type']
-        temp_dict['release_date'] = v['release_date']
-        temp_dict['total_artists'] = [i['name'] for i in v['total_artists']]
-        temp_dict['disc_image'] = v['images'][0]['url']
-        
-        if temp_dict['disc_type']=='single':
-            temp_dict['disc_name'] = v['single_name']
-            temp_dict['disc_id'] = v['single_id']
-            temp_dict['total_tracks'] = v['total_singles_num']
-        else: # album
-            temp_dict['disc_name'] = v['album_name']
-            temp_dict['disc_id'] = v['album_id']
-            temp_dict['total_tracks'] = v['total_tracks_num']
+    if artistName:
+        try:
+            r1 = Spotify('new_rap_ID').collection.find_one({'name':artistName})
+            # artistName = r1['name']
+            # album_lists = []
+            rapper_all_songs = []
+            for i, v in enumerate(r1['singles']+r1['albums']):
+                temp_dict = {}
+                temp_dict['disc_type'] = v['album_type']
+                temp_dict['release_date'] = v['release_date']
+                temp_dict['total_artists'] = [i['name'] for i in v['total_artists']]
+                temp_dict['disc_image'] = v['images'][0]['url']
+                
+                if temp_dict['disc_type']=='single':
+                    temp_dict['disc_name'] = v['single_name']
+                    temp_dict['disc_id'] = v['single_id']
+                    temp_dict['total_tracks'] = v['total_singles_num']
+                else: # album
+                    temp_dict['disc_name'] = v['album_name']
+                    temp_dict['disc_id'] = v['album_id']
+                    temp_dict['total_tracks'] = v['total_tracks_num']
 
-        temp_dict['external_urls'] = f"https://open.spotify.com/album/{temp_dict['disc_id']}"
-        rapper_all_songs.append(temp_dict)
-    columns = list(rapper_all_songs[0].keys())
-    
-    return artistName, rapper_all_songs, columns
+                temp_dict['external_urls'] = f"https://open.spotify.com/album/{temp_dict['disc_id']}"
+                rapper_all_songs.append(temp_dict)
+            columns = list(rapper_all_songs[0].keys())
+            returnList = [artistName, rapper_all_songs, columns]
+            return returnList
+        except:
+            return 0
 
+
+# 回傳的東西比 trackData2 還要少，
 # first one is artist's name, second one is album name
 def trackDataGen(artName, albName):
     try:

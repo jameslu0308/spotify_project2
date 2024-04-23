@@ -20,37 +20,56 @@ def hello():
 @app.route("/stats/<string:srcFilter>")
 def showStats(srcFilter):
     title, rap_dict, genres_dict = dataAnalysis.sortPopularity2(srcFilter)
-    return render_template('stats1.html', value1=title, 
+    return render_template('rankingstats.html', value1=title, 
                            value2=rap_dict, value3=genres_dict)
-
 
 @app.route("/artist/<string:name>")
 def query_artist(name):
     if name:
         try:
-            info = Spotify('rapper_information').get_collection_search_query('name', name)
+            info = Spotify('new_rap_ID').collection.find_one({'name':name})
             # choose 320*320
             src = info['images'][1]['url']
-            return render_template('index.html', artist=info, img=src)
+            return render_template('rapper_info.html', artist=info, img=src)
         except:
             return 'No artist found!'
+
+
 # 輸入artist name
+# 回傳 album list 頁面
 @app.route("/album/<string:name>")
 def query_ablum(name):
-    res = dataAnalysis.albumData(name)
+    res = dataAnalysis.albumData2(name)
     if res == 0:
         return 'No album information found!'
     else:
-        return render_template('index2v2.html', artistName = res[0], table_data = res[1], colname = res[2])
+        modify_col = ['Disc_cover', 'Disc_name', 'Disc_type', 'Release_date', \
+                      'Total_tracks', 'Total_artists', 'External_url']
+        return render_template('disc_list.html', artistName = res[0], table_data = res[1], colname = modify_col)
         
 
 @app.route('/tracks/<string:artName>/<string:albName>')  # fisrt one is artist's name, second one is album name
 def trackinfoGen(artName, albName):
-    res = dataAnalysis.trackDataGen(artName, albName)
-    if res == 0:
+    res = Spotify('new_album_info').collection.find_one(
+        {'main_artist': artName,
+         'album_name': albName}
+        )
+    album_id  = res['album_id']
+
+    res1 = dataAnalysis.trackData2(album_id)
+
+    #res = dataAnalysis.trackDataGen(artName, albName)
+    if res1 == 0:
         return 'No track information yet!'
     else:
-        return render_template('trackInfo1.html', albumName = res[0], albumID = res[1], table_data = res[2], colname = res[3], artName = res[4])
+        ##########################
+        #要修改這邊
+        modify_col = ['Track_name','Disc_number', 'Track_number',\
+                      'Durattiom(m)','Popularity','Artists_number',\
+                        'Artists','External_urls']
+        return render_template('track_list.html', albumName = res1[0], albumID = album_id, \
+                               table_data = res1[3], colname = modify_col, artName = artName,\
+                                imgUrl = res1[1])
         
 
 @app.route("/tracks/detail/<string:albumID>")
@@ -58,7 +77,7 @@ def trackDetail(albumID):
     albName, imgUrl, colName, list = dataAnalysis.trackData(albumID)
     return render_template('trackInfo2.html', albumName = albName, imgUrl = imgUrl, table_data = list, colname = colName)
 
-
+# 未完成
 @app.route("/tracks/lyrics/<string:artName>/<string:tracName>")
 def lyricsShow(artName, tracName):
     res = findLyrics(artName, tracName)

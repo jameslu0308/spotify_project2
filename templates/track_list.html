@@ -14,6 +14,8 @@
 <body class="back">
     <h1>Spotify statistics</h1>
     <hr/>
+
+    <h2><img src={{ imgUrl }} style="width: 300px;" Padding: 8px;></h2>
     <h2>{{ albumName }}</h2>
     <h3><a href="/tracks/detail/{{ albumID }}" target="_blank">See detail information about the album ʕ •ᴥ•ʔ</a></h3>
     <div>
@@ -21,7 +23,8 @@
             <thead>
                     <tr>
                         {% for row in colname %}
-                            <th width="600px">{{ row }}</th>
+                            <!-- "600px" -->
+                            <th width=auto>{{ row }}</th>
                         {% endfor %}
                     </tr>
 
@@ -31,10 +34,15 @@
                 {% for row in table_data %}
                     <tr>
                         <td>
-                            <a href="/tracks/lyrics/{{ artName }}/{{ row['Track Name'] }}" target="_blank">{{ row['Track Name'] }}</a>
+                            <a href="/tracks/lyrics/{{ artName }}/{{ row['track_name'] }}" target="_blank">{{ row['track_name'] }}</a>
                         </td>
-                        <td>{{ row['Artists'] }}</td>
-                        <td>{{ row['External_urls'] }}</td>
+                        <td>{{ row['disc_number'] }}</td>
+                        <td>{{ row['track_number'] }}</td>
+                        <td>{{ row['duration(minutes)'] }}</td>
+                        <td>{{ row['popularity'] }}</td>
+                        <td>{{ row['artist_number'] }}</td>
+                        <td>{{ row['artists'] }}</td>
+                        <td>{{ row['external_urls'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

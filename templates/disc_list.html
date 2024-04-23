@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Album List</title>
+    <style type="text/css">
+        .back{
+            background-color: ivory;
+        }
+
+    </style>
+
+</head>
+<body class="back">
+    <h1>Spotify statistics</h1>
+    <hr/>
+    <h2>Album information</h2>
+    <div>
+        <table border="5px" padding="10px" style="text-align:center">
+            <thead>
+                    <tr>
+                        {% for col in colname %}
+                            <th width="220px">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+
+            </thead>
+    
+            <tbody id="trackinfo">
+                {% for row in table_data %}
+                    <tr>
+                        <td>
+                            <img src={{ row['disc_image'] }} style="width: 220px;"/>
+                        </td>
+                        <td>
+                            <!-- target = "_blank" 目標頁面將在一個新的瀏覽器窗口或標籤中打開 -->
+                            <!-- <a href="/tracks/{{ artistName }}/{{ row['Album_Name'] }}" target="_blank">{{ row['disc_name'] }}</a> -->
+                            {% if row['disc_type'] == 'album' %}
+                                <a href="/tracks/{{ artistName }}/{{ row['disc_name'] }}" target="_blank">{{ row['disc_name'] }}</a>
+                            {% else %}
+                                {{ row['disc_name'] }}
+                            {% endif %}
+                        </td>
+                        <td>{{ row['disc_type'] }}</td>
+                        <td>{{ row['release_date'] }}</td>
+                        <td>{{ row['total_tracks'] }}</td>
+                        <td>{{ row['total_artists'] }}</td>
+                        <td>{{ row['external_urls'] }}</td>
+                        <!-- disc_image
+                            href(disc_name)
+                            type
+                            release_date    
+                            total_tracks
+                            artist
+                            external_urls
+
+                            3. ['disc_type',
+                            4. 'release_date',
+                            5. 'total_artists',
+                            1. 'disc_image',
+                            2. 'disc_name',
+                            'disc_id',
+                            6. 'total_tracks',
+                            7. 'external_urls']
+                        -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- <script>
+            var aObj = document.getElementById('trackinfo').getElementsByTagName('a');
+            for (var i = 0;i < aObj.length; i++) {
+                var srcName = aObj.item(i).innerText;
+                aObj.item(i).setAttribute('href', "http://127.0.0.1:5000/tracks/"+srcName);
+            }
+        </script> -->
+    </div>
+</body>
+</html>
