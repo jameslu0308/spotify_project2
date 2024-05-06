@@ -34,8 +34,8 @@ SPOTIFY_TOKEN_OWNER = ''
 collection new_album_info，每筆document為一張專輯，fields包含發行日、歌曲數、每首歌相關資訊
 
 #### 前後端呈現
-1. 以 Flask 建立Web後端應用，Javascript、HTML語法建立前端頁面呈現
+1. 以 **Flask** 建立Web後端應用，**Javascript**、**HTML**語法建立前端頁面呈現
 2. 頁面 1. 根據人氣排序水平長條圖 2. 根據歌手統計各類風格比例圓餅圖
 
 #### ETL
-1. docker compose 建立airflow，串接NoSQL，每天更新歌手人氣等相關資料
+1. docker compose 建立**airflow**，串接NoSQL，每天更新歌手人氣等相關資料

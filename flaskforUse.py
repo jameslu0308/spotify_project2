@@ -65,7 +65,7 @@ def trackinfoGen(artName, albName):
         ##########################
         #要修改這邊
         modify_col = ['Track_name','Disc_number', 'Track_number',\
-                      'Durattiom(m)','Popularity','Artists_number',\
+                      'Duration(m)','Popularity','Artists_number',\
                         'Artists','External_urls']
         return render_template('track_list.html', albumName = res1[0], albumID = album_id, \
                                table_data = res1[3], colname = modify_col, artName = artName,\
