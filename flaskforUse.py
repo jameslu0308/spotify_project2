@@ -27,7 +27,7 @@ def showStats(srcFilter):
 def query_artist(name):
     if name:
         try:
-            info = Spotify('new_rap_ID').collection.find_one({'name':name})
+            info = Spotify('new_rap_ID2').collection.find_one({'name':name})
             # choose 320*320
             src = info['images'][1]['url']
             return render_template('rapper_info.html', artist=info, img=src)
@@ -50,7 +50,7 @@ def query_ablum(name):
 
 @app.route('/tracks/<string:artName>/<string:albName>')  # fisrt one is artist's name, second one is album name
 def trackinfoGen(artName, albName):
-    res = Spotify('new_album_info').collection.find_one(
+    res = Spotify('new_album_info2').collection.find_one(
         {'main_artist': artName,
          'album_name': albName}
         )

@@ -57,7 +57,7 @@ def sortPopularity2(sorItem):
         sort2 = 'followers'
 
     # 根據followers/popularity篩選 最高的前50個歌手的所有 tag 總和
-    newrapID = Spotify('new_rap_ID')
+    newrapID = Spotify('new_rap_ID2')
     # 定義聚合管道
     pipeline_1 = [
         { "$sort": { sorItem: -1 } },  # 按照 followers 字段降序排序
@@ -155,7 +155,7 @@ def trackData(albumID):
 # 輸出所有 track
 def trackData2(album_id):
     try:
-        res1 = Spotify('new_album_info').collection.find_one({'album_id':album_id})
+        res1 = Spotify('new_album_info2').collection.find_one({'album_id':album_id})
         albumName = res1['album_name']
         imgUrl = res1['album_images'][0]['url']
         tracks = []

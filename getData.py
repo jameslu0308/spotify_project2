@@ -191,7 +191,8 @@ def InfoFromSpotify(search_Type, search_collection, new_collection_name):
             
             # handle token expired scenario
             if response.status_code == 401:
-                type, token = backendFunc.checkToken(collName, srcID)
+                type, token = backendFunc.checkToken(tokenCollection='spotify_token', \
+                                                    name = 'james')
                 headers = {'Authorization': f"{type} {token}"}
                 continue
 
