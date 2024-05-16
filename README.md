@@ -41,15 +41,15 @@ collection new_album_info，每筆document為一張專輯，fields包含發行�
 1. docker compose 建立**airflow**，串接NoSQL，每天更新歌手人氣等相關資料
 
 #### Overall page example
-1. followers/popularity page
-![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/followers.png =400x300)
+ - followers/popularity page
+   - <img src="https://github.com/jameslu0308/spotify_project2/blob/main/img/followers.png" width="400" height="300">
+   
+ - rapper page
+   - <img src="https://github.com/jameslu0308/spotify_project2/blob/main/img/rapper_page.png" width="400" height="300">
 
-2. rapper page
-![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/rapper_page.png =400x300)
+ - disc page
+   - <img src="https://github.com/jameslu0308/spotify_project2/blob/main/img/disc_page.png" width="400" height="300">
 
-3. disc page
-![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/disc_page.png =400x300)
-
-4. album page
-![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/album_page.png =400x300)
+ - album page
+   - <img src="https://github.com/jameslu0308/spotify_project2/blob/main/img/album_page.png" width="400" height="300">
 
