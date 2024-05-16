@@ -42,4 +42,14 @@ collection new_album_info，每筆document為一張專輯，fields包含發行�
 
 #### Overall page example
 1. followers/popularity page
+![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/followers.png =400x300)
+
+2. rapper page
+![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/rapper_page.png =400x300)
+
+3. disc page
+![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/disc_page.png =400x300)
+
+4. album page
+![image](https://github.com/jameslu0308/spotify_project2/blob/main/img/album_page.png =400x300)
 
