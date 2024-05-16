@@ -39,3 +39,7 @@ collection new_album_info，每筆document為一張專輯，fields包含發行�
 
 #### ETL
 1. docker compose 建立**airflow**，串接NoSQL，每天更新歌手人氣等相關資料
+
+#### Overall page example
+1. followers/popularity page
+
