@@ -1,3 +1,4 @@
+# 應該也是 MVC中的 model功能
 import pandas as pd
 import numpy as np
 from DB import Spotify

@@ -1,3 +1,5 @@
+# MVC 架構中的model
+# 針對數據的處理和操作 與資料庫交互CRUD操作
 import os
 from dotenv import load_dotenv
 load_dotenv()

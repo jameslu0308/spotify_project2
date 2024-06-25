@@ -7,7 +7,8 @@ import dataAnalysis
 from genius1 import findLyrics
 app = Flask(__name__)
 
-
+# MVC架構中的controller功能
+# 將資料從model中獲得，並且將數據傳到view，它包含應用程式的業務邏輯
 @app.route("/", methods=['POST', 'GET'])
 def hello():
     text = "Hello, World! Searching for music?"
