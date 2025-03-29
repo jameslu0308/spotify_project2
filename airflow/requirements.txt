@@ -1,0 +1,7 @@
+apache-airflow-providers-mongo
+pymongo
+python-dotenv
+pandas
+requests
+fake-useragent
+requests_tor
